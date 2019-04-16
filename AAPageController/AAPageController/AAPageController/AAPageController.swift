@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class AAPageController: UIViewController {
+open class AAPageController: UIViewController {
     
     //DataSource
     public weak var dataSource: AAPageControllerDataSource?
@@ -16,13 +16,13 @@ public class AAPageController: UIViewController {
     private var currentIndex = 0
     private var nextIndex: Int?
     
-    var topBarHeight: CGFloat = 30.0
-    var topBarItemWidth: CGFloat = 50.0
-    var topBarOriginY: CGFloat = UIApplication.shared.statusBarFrame.height
-    var topBarItemFont: UIFont = UIFont.systemFont(ofSize: 16)
-    var topBarItemSelectedFont: UIFont?
-    var bottomLineWidth: CGFloat?
-    var selectedColor: UIColor = .blue
+    public var topBarHeight: CGFloat = 30.0
+    public var topBarItemWidth: CGFloat = 50.0
+    public var topBarOriginY: CGFloat = UIApplication.shared.statusBarFrame.height
+    public var topBarItemFont: UIFont = UIFont.systemFont(ofSize: 16)
+    public var topBarItemSelectedFont: UIFont?
+    public var bottomLineWidth: CGFloat?
+    public var selectedColor: UIColor = .blue
     
     //UI
     private lazy var topBar: UICollectionView = {
@@ -50,7 +50,7 @@ public class AAPageController: UIViewController {
     }()
     private let bottomLine = UIView()
     
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
     }
     
