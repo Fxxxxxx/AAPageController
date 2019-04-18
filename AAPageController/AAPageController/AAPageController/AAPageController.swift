@@ -18,7 +18,7 @@ open class AAPageController: UIViewController {
     
     public var topBarHeight: CGFloat = 30.0
     public var topBarItemWidth: CGFloat = 50.0
-    public var topBarOriginY: CGFloat = UIApplication.shared.statusBarFrame.height
+    public var topBarOriginY: CGFloat?
     public var topBarItemFont: UIFont = UIFont.systemFont(ofSize: 16)
     public var topBarItemSelectedFont: UIFont?
     public var bottomLineWidth: CGFloat?
@@ -52,14 +52,19 @@ open class AAPageController: UIViewController {
     
     override open func viewDidLoad() {
         super.viewDidLoad()
+        
+        if topBarOriginY == nil {
+            topBarOriginY = UIApplication.shared.statusBarFrame.height
+            if let navBar = self.navigationController?.navigationBar {
+                topBarOriginY! += navBar.isHidden ? 0 :navBar.bounds.height
+            }
+        }
+        
     }
     
     public func start() {
         
-        if let navBar = self.navigationController?.navigationBar {
-            topBarOriginY += navBar.isHidden ? 0 :navBar.bounds.height
-        }
-        topBar.frame = CGRect.init(x: 0, y: topBarOriginY, width: view.bounds.width, height: topBarHeight)
+        topBar.frame = CGRect.init(x: 0, y: topBarOriginY!, width: view.bounds.width, height: topBarHeight)
         view.addSubview(topBar)
         
         bottomLineWidth = bottomLineWidth ?? topBarItemWidth
