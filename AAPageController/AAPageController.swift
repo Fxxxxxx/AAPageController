@@ -16,6 +16,9 @@ open class AAPageController: UIViewController {
     
     private var currentIndex = 0
     private var nextIndex: Int?
+    public func getCurrentIndex() -> Int {
+        return currentIndex
+    }
     
     public var topBarHeight: CGFloat = 30.0
     public var topBarItemWidth: CGFloat = 50.0
@@ -26,7 +29,7 @@ open class AAPageController: UIViewController {
     public var selectedColor: UIColor = .blue
     
     //UI
-    private lazy var topBar: UICollectionView = {
+    public lazy var topBar: UICollectionView = {
         let collection = UICollectionView.init(frame: .zero, collectionViewLayout: layout)
         collection.delegate = self
         collection.dataSource = self
