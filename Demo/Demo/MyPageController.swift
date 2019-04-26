@@ -22,15 +22,15 @@ class MyPageController: AAPageController {
         
         self.selectedColor = .purple
         self.dataSource = self
+        self.delegate = self
         self.topBarItemWidth = UIScreen.main.bounds.width / 6
         self.topBarHeight = 50
         self.bottomLineWidth = 30
         
-        start()
+        setUI()
         
     }
     
-
     /*
     // MARK: - Navigation
 
@@ -43,7 +43,7 @@ class MyPageController: AAPageController {
 
 }
 
-extension MyPageController: AAPageControllerDataSource {
+extension MyPageController: AAPageControllerDataSource, AAPageControllerDelegate {
     
     func indexOfChildController(pageController: AAPageController, child: UIViewController) -> Int {
         return ctrs.firstIndex(of: child)!
@@ -59,6 +59,10 @@ extension MyPageController: AAPageControllerDataSource {
     
     func titlesForChildControllers(pageController: AAPageController, index: Int) -> String {
         return "\(titles[index]) \(index)"
+    }
+    
+    func pageController(_: AAPageController, didDisplayedChildAt index: Int) {
+        print("display at: \(index)")
     }
     
 }

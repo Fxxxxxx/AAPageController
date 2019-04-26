@@ -9,7 +9,7 @@
 import UIKit
 import Foundation
 
-public protocol AAPageControllerDataSource: NSObjectProtocol {
+public protocol AAPageControllerDataSource: AnyObject {
     //需要显示的子控制器数量
     func numbersOfChildControllers(pageController: AAPageController) -> Int
     //子控制器对应的标题
@@ -24,4 +24,9 @@ extension AAPageControllerDataSource {
     func titlesForChildControllers(pageController: AAPageController, index: Int) -> String {
         return "\(index)"
     }
+}
+
+public protocol AAPageControllerDelegate: AnyObject {
+    //当前显示的子控制器序号
+    func pageController(_: AAPageController, didDisplayedChildAt index: Int)
 }

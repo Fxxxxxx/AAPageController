@@ -10,8 +10,9 @@ import UIKit
 
 open class AAPageController: UIViewController {
     
-    //DataSource
+    //DataSource  & delegate
     public weak var dataSource: AAPageControllerDataSource?
+    public weak var delegate: AAPageControllerDelegate?
     
     private var currentIndex = 0
     private var nextIndex: Int?
@@ -62,7 +63,7 @@ open class AAPageController: UIViewController {
         
     }
     
-    public func start() {
+    open func setUI() {
         
         topBar.frame = CGRect.init(x: 0, y: topBarOriginY!, width: view.bounds.width, height: topBarHeight)
         view.addSubview(topBar)
@@ -83,21 +84,24 @@ open class AAPageController: UIViewController {
         
     }
     
+    public func reloadData() {
+        topBar.reloadData()
+        scrollToChildController(of: 0)
+    }
+    
     //显示对应的子控制器
-    public func scrollToChildController(of index: Int) {
+    private func scrollToChildController(of index: Int) {
         let total = dataSource?.numbersOfChildControllers(pageController: self) ?? 0
         guard index < total else {
-            return
-        }
-        guard index != currentIndex else {
             return
         }
         if let ctr = dataSource?.childControllers(pageController: self, index: index) {
             pageController.setViewControllers([ctr], direction: index > currentIndex ? .forward : .reverse, animated: true, completion: nil)
             currentIndex = index
-            topBar.reloadData()
             let currentIndexPath = IndexPath.init(item: currentIndex, section: 0)
             topBar.scrollToItem(at: currentIndexPath, at: .centeredHorizontally, animated: true)
+            topBar.reloadItems(at: topBar.indexPathsForVisibleItems)
+            delegate?.pageController(self, didDisplayedChildAt: currentIndex)
             UIView.animate(withDuration: 0.35) {
                 self.bottomLine.center.x = (CGFloat(self.currentIndex) + 0.5) * self.topBarItemWidth
             }
@@ -106,12 +110,12 @@ open class AAPageController: UIViewController {
 
 }
 
-extension AAPageController: UICollectionViewDataSource, UICollectionViewDelegate {
+extension AAPageController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return dataSource?.numbersOfChildControllers(pageController: self) ?? 0
     }
     
-    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    open func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CELL", for: indexPath) as! AAItemCell
         cell.label.text = dataSource?.titlesForChildControllers(pageController: self, index: indexPath.item)
         if indexPath.item == currentIndex {
@@ -125,6 +129,9 @@ extension AAPageController: UICollectionViewDataSource, UICollectionViewDelegate
     }
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard indexPath.item != currentIndex else {
+            return
+        }
         scrollToChildController(of: indexPath.item)
     }
     
@@ -161,9 +168,10 @@ extension AAPageController: UIPageViewControllerDataSource, UIPageViewController
         if let index = nextIndex {
             currentIndex = index
             nextIndex = nil
-            topBar.reloadData()
             let currentIndexPath = IndexPath.init(item: currentIndex, section: 0)
             topBar.scrollToItem(at: currentIndexPath, at: .centeredHorizontally, animated: true)
+            topBar.reloadItems(at: topBar.indexPathsForVisibleItems)
+            delegate?.pageController(self, didDisplayedChildAt: currentIndex)
             UIView.animate(withDuration: 0.35) {
                 self.bottomLine.center.x = (CGFloat(self.currentIndex) + 0.5) * self.topBarItemWidth 
             }
