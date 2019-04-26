@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AAPageController
 
 class MyPageController: AAPageController {
     
@@ -25,7 +26,19 @@ class MyPageController: AAPageController {
         self.delegate = self
         self.topBarItemWidth = UIScreen.main.bounds.width / 6
         self.topBarHeight = 50
-        self.bottomLineWidth = 30
+        
+        bottomView = UIView.init(frame: CGRect.init(origin: .zero, size: .init(width: 6, height: 6)))
+        bottomView?.backgroundColor = .white
+
+        let path = UIBezierPath.init()
+        path.move(to: .init(x: 3, y: 0))
+        path.addLine(to: .init(x: 6, y: 6))
+        path.addLine(to: .init(x: 0, y: 6))
+        path.close()
+        let shapeLayer = CAShapeLayer.init()
+        shapeLayer.path = path.cgPath
+        shapeLayer.fillColor = UIColor.green.cgColor
+        bottomView?.layer.addSublayer(shapeLayer)
         
         setUI()
         
