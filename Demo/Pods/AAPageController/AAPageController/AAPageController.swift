@@ -74,7 +74,9 @@ open class AAPageController: UIViewController {
         if bottomView == nil {
             bottomViewWidth = bottomViewWidth ?? topBarItemWidth
             bottomView = UIView()
-            bottomView?.frame = CGRect.init(x: 0, y: topBarHeight - 1, width: bottomViewWidth!, height: 1)
+            bottomView?.frame = CGRect.init(x: 0, y: topBarHeight - 2, width: bottomViewWidth!, height: 2)
+            bottomView?.layer.masksToBounds = true
+            bottomView?.layer.cornerRadius = 1
             bottomView?.backgroundColor = selectedColor
         }
         topBar.addSubview(bottomView!)

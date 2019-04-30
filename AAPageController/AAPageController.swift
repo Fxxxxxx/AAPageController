@@ -74,13 +74,15 @@ open class AAPageController: UIViewController {
         if bottomView == nil {
             bottomViewWidth = bottomViewWidth ?? topBarItemWidth
             bottomView = UIView()
-            bottomView?.frame = CGRect.init(x: 0, y: topBarHeight - 1, width: bottomViewWidth!, height: 1)
+            bottomView?.frame = CGRect.init(x: 0, y: topBarHeight - 2, width: bottomViewWidth!, height: 2)
+            bottomView?.layer.masksToBounds = true
+            bottomView?.layer.cornerRadius = 1
             bottomView?.backgroundColor = selectedColor
         }
         topBar.addSubview(bottomView!)
         bottomView?.frame.origin.y = topBarHeight - (bottomView?.bounds.height ?? 0)
         bottomView?.center.x = topBarItemWidth / 2
-
+        
         self.addChild(pageController)
         pageController.view.frame = CGRect.init(x: 0, y: topBar.frame.origin.y + topBarHeight, width: view.bounds.width, height: view.bounds.height - topBar.frame.maxY)
         view.addSubview(pageController.view)
@@ -114,7 +116,7 @@ open class AAPageController: UIViewController {
             }
         }
     }
-
+    
 }
 
 extension AAPageController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
