@@ -1,16 +1,23 @@
 PODS:
-  - AAPageController (1.1.0)
+  - AAPageController (1.1.0):
+    - SnapKit
+  - SnapKit (4.2.0)
 
 DEPENDENCIES:
-  - AAPageController
+  - AAPageController (from `/Users/cztv/Documents/Git/AAPageController`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
-    - AAPageController
+    - SnapKit
+
+EXTERNAL SOURCES:
+  AAPageController:
+    :path: "/Users/cztv/Documents/Git/AAPageController"
 
 SPEC CHECKSUMS:
-  AAPageController: bbb773d2ef2beb76d0a6036f0c20cf51ec29c46b
+  AAPageController: e22ab4eb576e45c9829c97283f4c5ca13e1d0737
+  SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
 
-PODFILE CHECKSUM: 3a5426cbe891e461f28a0b8f22f6341847111b94
+PODFILE CHECKSUM: 51a8501e63cc88c1b6b03aa7e63d3c7fb2c88115
 
-COCOAPODS: 1.7.0.beta.3
+COCOAPODS: 1.7.5

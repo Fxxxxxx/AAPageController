@@ -20,7 +20,7 @@ public protocol AAPageControllerDataSource: AnyObject {
     func indexOfChildController(pageController: AAPageController, child: UIViewController) -> Int
 }
 
-extension AAPageControllerDataSource {
+public extension AAPageControllerDataSource {
     func titlesForChildControllers(pageController: AAPageController, index: Int) -> String {
         return "\(index)"
     }
@@ -29,4 +29,8 @@ extension AAPageControllerDataSource {
 public protocol AAPageControllerDelegate: AnyObject {
     //当前显示的子控制器序号
     func pageController(_: AAPageController, didDisplayedChildAt index: Int)
+}
+
+public extension AAPageControllerDelegate {
+    func pageController(_: AAPageController, didDisplayedChildAt index: Int) {}
 }
