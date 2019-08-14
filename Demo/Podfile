@@ -6,5 +6,5 @@ target 'Demo' do
   use_frameworks!
 
   # Pods for Demo
-  pod 'AAPageController', :path => '/Users/cztv/Documents/Git/AAPageController'
+  pod 'AAPageController'
 end

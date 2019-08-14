@@ -29,6 +29,7 @@ open class AAPageController: UIViewController {
     public var topBarItemSelectedFont: UIFont?
     public var indexTagViewWidth: CGFloat = 20.0
     public var selectedColor: UIColor = .blue
+    public var normalTitleColor: UIColor = .darkText
     
     //UI
     public lazy var topBar: UICollectionView = {
@@ -57,6 +58,8 @@ open class AAPageController: UIViewController {
     
     override open func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
+        view.clipsToBounds = true
         setTopBar()
         setPageView()
     }
@@ -71,7 +74,7 @@ open class AAPageController: UIViewController {
         }
         
         indexTagView.backgroundColor = selectedColor
-        indexTagView.frame = .init(x: 0, y: topBarHeight - 2, width: indexTagViewWidth, height: 2)
+        indexTagView.frame = .init(x: -indexTagViewWidth, y: topBarHeight - 2, width: indexTagViewWidth, height: 2)
         topBar.addSubview(indexTagView)
     }
     
@@ -83,12 +86,8 @@ open class AAPageController: UIViewController {
             maker.left.right.bottom.equalToSuperview()
             maker.top.equalTo(view.snp.topMargin).offset(topBarOriginY + topBarHeight)
         }
-        if let currentCtr = dataSource?.childControllers(pageController: self, index: 0) {
-            pageController.setViewControllers([currentCtr], direction: .forward, animated: false, completion: nil)
-            nextIndex = 0
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] () in
-                self?.pageViewController(self?.pageController ?? UIPageViewController(), didFinishAnimating: true, previousViewControllers: [], transitionCompleted: true)
-            }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.scrollToChildController(of: 0)
         }
     }
     
@@ -125,7 +124,7 @@ extension AAPageController: UICollectionViewDataSource, UICollectionViewDelegate
             cell.label.font = topBarItemSelectedFont ?? topBarItemFont
         } else {
             cell.label.font = topBarItemFont
-            cell.label.textColor = .black
+            cell.label.textColor = normalTitleColor
         }
         return cell
     }
@@ -186,9 +185,9 @@ extension AAPageController: UIPageViewControllerDataSource, UIPageViewController
             topBar.scrollToItem(at: currentIndexPath, at: .centeredHorizontally, animated: true)
             topBar.reloadItems(at: topBar.indexPathsForVisibleItems)
             delegate?.pageController(self, didDisplayedChildAt: currentIndex)
-            if let cell = topBar.cellForItem(at: currentIndexPath) {
+            if let frame = layout.layoutAttributesForItem(at: currentIndexPath)?.frame {
                 UIView.animate(withDuration: 0.35) {
-                    self.indexTagView.center.x = cell.frame.midX
+                    self.indexTagView.center.x = frame.midX
                 }
             }
         }
