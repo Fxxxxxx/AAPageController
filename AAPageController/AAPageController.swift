@@ -97,7 +97,7 @@ open class AAPageController: UIViewController {
     }
     
     //显示对应的子控制器
-    private func scrollToChildController(of index: Int) {
+    public func scrollToChildController(of index: Int) {
         let total = dataSource?.numbersOfChildControllers(pageController: self) ?? 0
         guard index < total else {
             return
