@@ -220,9 +220,3 @@ extension AAPageController {
         return 0
     }
 }
-
-extension UIViewController: AAEqual {
-    public func equal(_ a: UIViewController) -> Bool {
-        return self === a
-    }
-}

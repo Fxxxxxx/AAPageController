@@ -1,6 +1,6 @@
 PODS:
-  - AALRUCache (1.0.1)
-  - AAPageController (1.2.2):
+  - AALRUCache (1.0.2)
+  - AAPageController (1.3.0):
     - AALRUCache
     - SnapKit
   - SnapKit (4.2.0)
@@ -18,8 +18,8 @@ EXTERNAL SOURCES:
     :path: "/Users/cztv/Documents/Git/AAPageController"
 
 SPEC CHECKSUMS:
-  AALRUCache: 46d509548c48513ff7b4de92a412885b8f816a6c
-  AAPageController: 541de6442a3f4c738004a945830f934d0d9ce067
+  AALRUCache: 90a2066e0ae1be490fd071420972f29f038339c8
+  AAPageController: 1818bb92515014a7c4fb971ceba7f89a10e60f14
   SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
 
 PODFILE CHECKSUM: 51a8501e63cc88c1b6b03aa7e63d3c7fb2c88115
