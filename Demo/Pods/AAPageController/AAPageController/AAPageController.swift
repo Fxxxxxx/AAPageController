@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SnapKit
 
 open class AAPageController: UIViewController {
     
@@ -14,7 +15,7 @@ open class AAPageController: UIViewController {
     public weak var dataSource: AAPageControllerDataSource?
     public weak var delegate: AAPageControllerDelegate?
     
-    private var currentIndex = 0
+    private var currentIndex = -1
     private var nextIndex: Int?
     public func getCurrentIndex() -> Int {
         return currentIndex
@@ -22,11 +23,13 @@ open class AAPageController: UIViewController {
     
     public var topBarHeight: CGFloat = 30.0
     public var topBarItemWidth: CGFloat = 50.0
-    public var topBarOriginY: CGFloat?
+    public var topBarItemSpace: CGFloat = 0.0
+    public var topBarOriginY: CGFloat = 0.0
     public var topBarItemFont: UIFont = UIFont.systemFont(ofSize: 16)
     public var topBarItemSelectedFont: UIFont?
-    public var bottomViewWidth: CGFloat?
+    public var indexTagViewWidth: CGFloat = 20.0
     public var selectedColor: UIColor = .blue
+    public var normalTitleColor: UIColor = .darkText
     
     //UI
     public lazy var topBar: UICollectionView = {
@@ -35,15 +38,14 @@ open class AAPageController: UIViewController {
         collection.dataSource = self
         collection.backgroundColor = .white
         collection.showsHorizontalScrollIndicator = false
-        collection.register(AAItemCell.self, forCellWithReuseIdentifier: "CELL")
+        collection.register(AAItemCell.nib(), forCellWithReuseIdentifier: "CELL")
         return collection
     }()
     private lazy var layout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 0
-        layout.minimumInteritemSpacing = 0
-        layout.itemSize = CGSize.init(width: topBarItemWidth, height: topBarHeight)
+        layout.minimumLineSpacing = topBarItemSpace
+        layout.minimumInteritemSpacing = topBarItemSpace
         return layout
     }()
     private lazy var pageController: UIPageViewController = {
@@ -52,45 +54,41 @@ open class AAPageController: UIViewController {
         ctr.delegate = self
         return ctr
     }()
-    public var bottomView: UIView?
+    public var indexTagView = UIView()
     
     override open func viewDidLoad() {
         super.viewDidLoad()
-        
-        if topBarOriginY == nil {
-            topBarOriginY = UIApplication.shared.statusBarFrame.height
-            if let navBar = self.navigationController?.navigationBar {
-                topBarOriginY! += navBar.isHidden ? 0 :navBar.bounds.height
-            }
-        }
-        
+        view.backgroundColor = .white
+        view.clipsToBounds = true
+        setTopBar()
+        setPageView()
     }
     
-    open func setUI() {
-        
-        topBar.frame = CGRect.init(x: 0, y: topBarOriginY!, width: view.bounds.width, height: topBarHeight)
+    open func setTopBar() {
+        guard !topBar.isHidden else { return }
         view.addSubview(topBar)
-        
-        if bottomView == nil {
-            bottomViewWidth = bottomViewWidth ?? topBarItemWidth
-            bottomView = UIView()
-            bottomView?.frame = CGRect.init(x: 0, y: topBarHeight - 2, width: bottomViewWidth!, height: 2)
-            bottomView?.layer.masksToBounds = true
-            bottomView?.layer.cornerRadius = 1
-            bottomView?.backgroundColor = selectedColor
+        topBar.snp.makeConstraints { (maker) in
+            maker.top.equalTo(view.snp.topMargin).offset(topBarOriginY)
+            maker.left.right.equalToSuperview()
+            maker.height.equalTo(topBarHeight)
         }
-        topBar.addSubview(bottomView!)
-        bottomView?.frame.origin.y = topBarHeight - (bottomView?.bounds.height ?? 0)
-        bottomView?.center.x = topBarItemWidth / 2
-
+        
+        indexTagView.backgroundColor = selectedColor
+        indexTagView.frame = .init(x: -indexTagViewWidth, y: topBarHeight - 2, width: indexTagViewWidth, height: 2)
+        topBar.addSubview(indexTagView)
+    }
+    
+    open func setPageView() {
         self.addChild(pageController)
-        pageController.view.frame = CGRect.init(x: 0, y: topBar.frame.origin.y + topBarHeight, width: view.bounds.width, height: view.bounds.height - topBar.frame.maxY)
         view.addSubview(pageController.view)
         pageController.didMove(toParent: self)
-        if let currentCtr = dataSource?.childControllers(pageController: self, index: currentIndex) {
-            pageController.setViewControllers([currentCtr], direction: .forward, animated: false, completion: nil)
+        pageController.view.snp.makeConstraints { (maker) in
+            maker.left.right.bottom.equalToSuperview()
+            maker.top.equalTo(view.snp.topMargin).offset(topBarOriginY + topBarHeight)
         }
-        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.scrollToChildController(of: 0)
+        }
     }
     
     public func reloadData() {
@@ -99,24 +97,18 @@ open class AAPageController: UIViewController {
     }
     
     //显示对应的子控制器
-    private func scrollToChildController(of index: Int) {
+    public func scrollToChildController(of index: Int) {
         let total = dataSource?.numbersOfChildControllers(pageController: self) ?? 0
         guard index < total else {
             return
         }
         if let ctr = dataSource?.childControllers(pageController: self, index: index) {
             pageController.setViewControllers([ctr], direction: index > currentIndex ? .forward : .reverse, animated: true, completion: nil)
-            currentIndex = index
-            let currentIndexPath = IndexPath.init(item: currentIndex, section: 0)
-            topBar.scrollToItem(at: currentIndexPath, at: .centeredHorizontally, animated: true)
-            topBar.reloadItems(at: topBar.indexPathsForVisibleItems)
-            delegate?.pageController(self, didDisplayedChildAt: currentIndex)
-            UIView.animate(withDuration: 0.35) {
-                self.bottomView?.center.x = (CGFloat(self.currentIndex) + 0.5) * self.topBarItemWidth
-            }
+            nextIndex = index
+            pageViewController(pageController, didFinishAnimating: true, previousViewControllers: [], transitionCompleted: true)
         }
     }
-
+    
 }
 
 extension AAPageController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -132,7 +124,7 @@ extension AAPageController: UICollectionViewDataSource, UICollectionViewDelegate
             cell.label.font = topBarItemSelectedFont ?? topBarItemFont
         } else {
             cell.label.font = topBarItemFont
-            cell.label.textColor = .black
+            cell.label.textColor = normalTitleColor
         }
         return cell
     }
@@ -142,6 +134,18 @@ extension AAPageController: UICollectionViewDataSource, UICollectionViewDelegate
             return
         }
         scrollToChildController(of: indexPath.item)
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        var width = topBarItemWidth
+        if width == 0 {
+            let title = dataSource?.titlesForChildControllers(pageController: self, index: indexPath.item) ?? ""
+            var font = indexPath.item == currentIndex ? topBarItemSelectedFont : topBarItemFont
+            font = font ?? topBarItemFont
+            let rect = NSString.init(string: title).boundingRect(with: .init(width: 0, height: topBarHeight), options: .usesLineFragmentOrigin, attributes: [.font: font!], context: nil)
+            width = rect.width + 5
+        }
+        return .init(width: width, height: topBarHeight)
     }
     
 }
@@ -181,23 +185,13 @@ extension AAPageController: UIPageViewControllerDataSource, UIPageViewController
             topBar.scrollToItem(at: currentIndexPath, at: .centeredHorizontally, animated: true)
             topBar.reloadItems(at: topBar.indexPathsForVisibleItems)
             delegate?.pageController(self, didDisplayedChildAt: currentIndex)
-            UIView.animate(withDuration: 0.35) {
-                self.bottomView?.center.x = (CGFloat(self.currentIndex) + 0.5) * self.topBarItemWidth
+            if let frame = layout.layoutAttributesForItem(at: currentIndexPath)?.frame {
+                UIView.animate(withDuration: 0.35) {
+                    self.indexTagView.center.x = frame.midX
+                }
             }
         }
     }
     
 }
 
-private class AAItemCell: UICollectionViewCell {
-    let label = UILabel()
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        label.frame = contentView.bounds
-        label.textAlignment = .center
-        contentView.addSubview(label)
-    }
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}

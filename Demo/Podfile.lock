@@ -1,5 +1,7 @@
 PODS:
-  - AAPageController (1.1.0):
+  - AALRUCache (1.0.1)
+  - AAPageController (1.2.2):
+    - AALRUCache
     - SnapKit
   - SnapKit (4.2.0)
 
@@ -8,6 +10,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - AALRUCache
     - SnapKit
 
 EXTERNAL SOURCES:
@@ -15,7 +18,8 @@ EXTERNAL SOURCES:
     :path: "/Users/cztv/Documents/Git/AAPageController"
 
 SPEC CHECKSUMS:
-  AAPageController: e22ab4eb576e45c9829c97283f4c5ca13e1d0737
+  AALRUCache: 46d509548c48513ff7b4de92a412885b8f816a6c
+  AAPageController: 541de6442a3f4c738004a945830f934d0d9ce067
   SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
 
 PODFILE CHECKSUM: 51a8501e63cc88c1b6b03aa7e63d3c7fb2c88115

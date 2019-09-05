@@ -8,12 +8,19 @@
 
 import UIKit
 import SnapKit
+import AALRUCache
 
 open class AAPageController: UIViewController {
     
     //DataSource  & delegate
     public weak var dataSource: AAPageControllerDataSource?
     public weak var delegate: AAPageControllerDelegate?
+    
+    //cache
+    public var cacheMaxCount = 20
+    private lazy var vcCache: AALRUCache = {
+        return AALRUCache<Int, UIViewController>.init(cacheMaxCount)
+    }()
     
     private var currentIndex = -1
     private var nextIndex: Int?
@@ -92,6 +99,7 @@ open class AAPageController: UIViewController {
     }
     
     public func reloadData() {
+        vcCache.removeAll()
         topBar.reloadData()
         scrollToChildController(of: 0)
     }
@@ -102,7 +110,7 @@ open class AAPageController: UIViewController {
         guard index < total else {
             return
         }
-        if let ctr = dataSource?.childControllers(pageController: self, index: index) {
+        if let ctr = getChild(for: index) {
             pageController.setViewControllers([ctr], direction: index > currentIndex ? .forward : .reverse, animated: true, completion: nil)
             nextIndex = index
             pageViewController(pageController, didFinishAnimating: true, previousViewControllers: [], transitionCompleted: true)
@@ -157,7 +165,7 @@ extension AAPageController: UIPageViewControllerDataSource, UIPageViewController
             return nil
         }
         let next = (currentIndex + total - 1) % total
-        return dataSource?.childControllers(pageController: self, index: next)
+        return getChild(for: next)
     }
     
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
@@ -166,11 +174,11 @@ extension AAPageController: UIPageViewControllerDataSource, UIPageViewController
             return nil
         }
         let next = (currentIndex + total + 1) % total
-        return dataSource?.childControllers(pageController: self, index: next)
+        return getChild(for: next)
     }
     
     public func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
-        nextIndex = dataSource?.indexOfChildController(pageController: self, child: pendingViewControllers.first!)
+        nextIndex = getChildIndex(pendingViewControllers.first!)
     }
     
     public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
@@ -195,3 +203,26 @@ extension AAPageController: UIPageViewControllerDataSource, UIPageViewController
     
 }
 
+extension AAPageController {
+    private func getChild(for index: Int) -> UIViewController? {
+        if let vc = vcCache[index] {
+            return vc
+        }
+        let vc = dataSource?.childControllers(pageController: self, index: index)
+        vcCache[index] = vc
+        return vc
+    }
+    
+    private func getChildIndex(_ child: UIViewController) -> Int {
+        if let key = vcCache.key(for: child) {
+            return key
+        }
+        return 0
+    }
+}
+
+extension UIViewController: AAEqual {
+    public func equal(_ a: UIViewController) -> Bool {
+        return self === a
+    }
+}
