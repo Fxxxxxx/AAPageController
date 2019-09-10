@@ -55,7 +55,7 @@ open class AAPageController: UIViewController {
         layout.minimumInteritemSpacing = topBarItemSpace
         return layout
     }()
-    private lazy var pageController: UIPageViewController = {
+    public lazy var pageController: UIPageViewController = {
         let ctr = UIPageViewController.init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
         ctr.dataSource = self
         ctr.delegate = self
