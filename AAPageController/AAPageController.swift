@@ -15,6 +15,7 @@ open class AAPageController: UIViewController {
     //DataSource  & delegate
     public weak var dataSource: AAPageControllerDataSource?
     public weak var delegate: AAPageControllerDelegate?
+    public var isCycling = true
     
     //cache
     public var cacheMaxCount = 20
@@ -164,7 +165,14 @@ extension AAPageController: UIPageViewControllerDataSource, UIPageViewController
         guard total > 1 else {
             return nil
         }
-        let next = (currentIndex + total - 1) % total
+        let next = currentIndex - 1
+        if next == -1 {
+            if isCycling {
+                return getChild(for: total - 1)
+            } else {
+                return nil
+            }
+        }
         return getChild(for: next)
     }
     
@@ -173,7 +181,14 @@ extension AAPageController: UIPageViewControllerDataSource, UIPageViewController
         guard total > 1 else {
             return nil
         }
-        let next = (currentIndex + total + 1) % total
+        let next = currentIndex + 1
+        if next == total {
+            if isCycling {
+                return getChild(for: 0)
+            } else {
+                return nil
+            }
+        }
         return getChild(for: next)
     }
     

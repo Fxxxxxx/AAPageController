@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
 s.name         = "AAPageController"
-s.version      = "1.3.2"
+s.version      = "1.3.3"
 s.summary      = "iOS PageController with top tab"
 
 s.homepage     = "https://github.com/Fxxxxxx/AAPageController"

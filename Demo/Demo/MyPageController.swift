@@ -27,6 +27,7 @@ class MyPageController: AAPageController {
         self.topBarItemWidth = 0
         self.topBarItemSpace = 10
         self.topBarHeight = 50
+        self.isCycling = false
         super.viewDidLoad()
     }
     
