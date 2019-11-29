@@ -208,8 +208,19 @@ extension AAPageController: UIPageViewControllerDataSource, UIPageViewController
             topBar.scrollToItem(at: currentIndexPath, at: .centeredHorizontally, animated: true)
             topBar.reloadItems(at: topBar.indexPathsForVisibleItems)
             delegate?.pageController(self, didDisplayedChildAt: currentIndex)
+            
+            let title = dataSource?.titlesForChildControllers(pageController: self, index: currentIndexPath.item) ?? ""
+            var font = currentIndexPath.item == currentIndex ? topBarItemSelectedFont : topBarItemFont
+            font = font ?? topBarItemFont
+            let rect = NSString.init(string: title).boundingRect(with: .init(width: 0, height: topBarHeight), options: .usesLineFragmentOrigin, attributes: [.font: font!], context: nil)
+            
             if let frame = layout.layoutAttributesForItem(at: currentIndexPath)?.frame {
                 UIView.animate(withDuration: 0.35) {
+                    
+                    var tempB = self.indexTagView.bounds
+                    tempB.size.width = rect.width - 5
+                    self.indexTagView.bounds = tempB
+                    
                     self.indexTagView.center.x = frame.midX
                 }
             }
